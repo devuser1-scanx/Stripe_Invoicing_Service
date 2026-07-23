@@ -1,0 +1,13 @@
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+gunicorn==23.0.0
+pydantic-settings==2.10.1
+SQLAlchemy==2.0.41
+alembic==1.16.4
+cloud-sql-python-connector[pg8000]==1.18.2
+pg8000==1.31.2
+structlog==25.4.0
+python-dotenv==1.1.1
+
+pytest==8.4.1
+httpx==0.28.1
