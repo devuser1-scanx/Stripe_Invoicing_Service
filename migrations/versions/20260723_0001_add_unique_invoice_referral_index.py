@@ -1,9 +1,4 @@
-"""Add one-invoice-per-referral safeguard.
-
-Revision ID: 20260723_0001
-Revises:
-Create Date: 2026-07-23
-"""
+"""Add one-invoice-per-referral safeguard."""
 from typing import Sequence, Union
 
 from alembic import op

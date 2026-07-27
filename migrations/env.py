@@ -4,10 +4,15 @@ from alembic import context
 
 from app.db.base import Base
 from app.db.session import engine
-from app.models import OrganizationInvoice  # noqa: F401
+from app.models import (
+    Appointment,
+    AppointmentReferral,
+    OrganizationInvoice,
+    ReferralOrganization,
+    ReferralOrganizationContact,
+)
 
 config = context.config
-
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
@@ -15,10 +20,7 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    raise RuntimeError(
-        "Offline migrations are disabled because this project uses the "
-        "Cloud SQL Python Connector. Run migrations online."
-    )
+    raise RuntimeError("Offline migrations are disabled.")
 
 
 def run_migrations_online() -> None:
@@ -28,9 +30,7 @@ def run_migrations_online() -> None:
             target_metadata=target_metadata,
             compare_type=True,
             compare_server_default=True,
-            include_schemas=False,
         )
-
         with context.begin_transaction():
             context.run_migrations()
 

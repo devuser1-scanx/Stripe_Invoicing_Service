@@ -10,7 +10,6 @@ router = APIRouter(tags=["Health"])
 
 @router.get("/health")
 def health() -> dict[str, str]:
-    """Lightweight liveness endpoint. Does not query dependencies."""
     return {
         "status": "ok",
         "service": settings.app_name,
@@ -21,7 +20,6 @@ def health() -> dict[str, str]:
 
 @router.get("/health/ready")
 def readiness() -> dict[str, str]:
-    """Readiness endpoint that verifies PostgreSQL connectivity."""
     try:
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
@@ -31,7 +29,4 @@ def readiness() -> dict[str, str]:
             detail="Database is unavailable",
         ) from exc
 
-    return {
-        "status": "ready",
-        "database": "connected",
-    }
+    return {"status": "ready", "database": "connected"}

@@ -8,6 +8,10 @@ cloud-sql-python-connector[pg8000]==1.18.2
 pg8000==1.31.2
 structlog==25.4.0
 python-dotenv==1.1.1
-# Following are for non application oriented packages
+stripe==12.3.0
+google-cloud-tasks==2.19.3
+google-api-core==2.25.1
+protobuf==6.31.1
+
 pytest==8.4.1
 httpx==0.28.1

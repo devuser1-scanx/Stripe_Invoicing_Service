@@ -20,7 +20,6 @@ def _get_connector() -> Connector:
 
 def _cloud_sql_connection() -> Any:
     ip_type = IPTypes.PRIVATE if settings.db_ip_type == "PRIVATE" else IPTypes.PUBLIC
-
     return _get_connector().connect(
         settings.instance_connection_name,
         "pg8000",
@@ -32,7 +31,7 @@ def _cloud_sql_connection() -> Any:
 
 
 def _create_engine() -> Engine:
-    common_options = {
+    options = {
         "pool_pre_ping": True,
         "pool_size": settings.db_pool_size,
         "max_overflow": settings.db_max_overflow,
@@ -41,21 +40,20 @@ def _create_engine() -> Engine:
     }
 
     if settings.use_tcp_database:
-        password = settings.db_password.get_secret_value()
         url = sqlalchemy.engine.URL.create(
             drivername="postgresql+pg8000",
             username=settings.db_user,
-            password=password,
+            password=settings.db_password.get_secret_value(),
             host=settings.db_host,
             port=settings.db_port,
             database=settings.db_name,
         )
-        return sqlalchemy.create_engine(url, **common_options)
+        return sqlalchemy.create_engine(url, **options)
 
     return sqlalchemy.create_engine(
         "postgresql+pg8000://",
         creator=_cloud_sql_connection,
-        **common_options,
+        **options,
     )
 
 
@@ -73,7 +71,6 @@ def get_db() -> Generator[Session, None, None]:
 
 def close_database_resources() -> None:
     engine.dispose()
-
     global _connector
     if _connector is not None:
         _connector.close()
