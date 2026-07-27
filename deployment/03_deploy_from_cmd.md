@@ -94,7 +94,7 @@ gcloud run services logs read %SERVICE_NAME% --region=%REGION% --project=%PROJEC
 From the same project directory:
 
 ```cmd
-gcloud run deploy %SERVICE_NAME% --source=. --region=%REGION% --project=%PROJECT_ID% --service-account=%RUNTIME_SA% --no-allow-unauthenticated
+gcloud run deploy scanx-billing-service --source=. --region=us-central1 --project=vernal-maker-473121-k4 --service-account=scanx-billing-runtime@vernal-maker-473121-k4.iam.gserviceaccount.com --no-allow-unauthenticated
 ```
 
 Cloud Run retains settings not explicitly changed, but review the deployed configuration after each major change.

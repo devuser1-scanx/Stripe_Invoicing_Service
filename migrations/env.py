@@ -4,13 +4,6 @@ from alembic import context
 
 from app.db.base import Base
 from app.db.session import engine
-from app.models import (
-    Appointment,
-    AppointmentReferral,
-    OrganizationInvoice,
-    ReferralOrganization,
-    ReferralOrganizationContact,
-)
 
 config = context.config
 if config.config_file_name is not None:

@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     # Application
     app_name: str = "ScanX Billing Service"
-    app_version: str = "0.3.0"
+    app_version: str = "0.4.0"
 
     environment: Literal[
         "local",
@@ -57,7 +57,11 @@ class Settings(BaseSettings):
     # Local database fallback
     use_tcp_database: bool = False
     db_host: str = "127.0.0.1"
-    db_port: int = 5432
+    db_port: int = Field(
+        default=5432,
+        ge=1,
+        le=65535,
+    )
 
     # Stripe
     stripe_secret_key: SecretStr
@@ -74,15 +78,32 @@ class Settings(BaseSettings):
 
     # Cloud Tasks
     cloud_tasks_queue: str = "scanx-invoice-primary"
-
     billing_service_url: str
-
     cloud_tasks_invoker_service_account: str
 
     invoice_delay_seconds: int = Field(
         default=600,
         ge=0,
         le=86400,
+    )
+
+    # Nightly reconciliation
+    reconciliation_lookback_days: int = Field(
+        default=30,
+        ge=1,
+        le=365,
+    )
+
+    reconciliation_batch_size: int = Field(
+        default=250,
+        ge=1,
+        le=1000,
+    )
+
+    reconciliation_task_delay_seconds: int = Field(
+        default=0,
+        ge=0,
+        le=3600,
     )
 
 

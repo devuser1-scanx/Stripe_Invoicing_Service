@@ -29,22 +29,43 @@ class BillingRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_context(self, appointment_referral_id: uuid.UUID) -> BillingContext | None:
-        referral = self.db.get(AppointmentReferral, appointment_referral_id)
+    def get_context(
+        self,
+        appointment_referral_id: uuid.UUID,
+    ) -> BillingContext | None:
+        referral = self.db.get(
+            AppointmentReferral,
+            appointment_referral_id,
+        )
+
         if referral is None:
             return None
 
-        appointment = self.db.get(Appointment, referral.appointment_id)
-        organization = self.db.get(ReferralOrganization, referral.organization_id)
+        appointment_stmt = select(Appointment).where(
+            Appointment.appointment_id
+            == referral.appointment_id
+        )
+
+        appointment = self.db.scalar(appointment_stmt)
+
+        organization = self.db.get(
+            ReferralOrganization,
+            referral.organization_id,
+        )
+
         if appointment is None or organization is None:
             return None
 
-        contact_stmt: Select[tuple[ReferralOrganizationContact]] = (
+        contact_stmt: Select[
+            tuple[ReferralOrganizationContact]
+        ] = (
             select(ReferralOrganizationContact)
             .where(
-                ReferralOrganizationContact.organization_id == organization.id,
+                ReferralOrganizationContact.organization_id
+                == organization.id,
                 ReferralOrganizationContact.is_active.is_(True),
-                ReferralOrganizationContact.can_receive_invoices.is_(True),
+                ReferralOrganizationContact
+                .can_receive_invoices.is_(True),
                 ReferralOrganizationContact.email.is_not(None),
             )
             .order_by(
@@ -53,17 +74,23 @@ class BillingRepository:
             )
             .limit(1)
         )
+
         contact = self.db.scalar(contact_stmt)
 
         invoice_stmt = select(OrganizationInvoice).where(
-            OrganizationInvoice.appointment_referral_id == appointment_referral_id
+            OrganizationInvoice.appointment_referral_id
+            == appointment_referral_id
         )
+
         existing_invoice = self.db.scalar(invoice_stmt)
 
         billing_email = (
             contact.email
             if contact is not None
-            else organization.billing_email or organization.primary_email
+            else (
+                organization.billing_email
+                or organization.primary_email
+            )
         )
 
         return BillingContext(

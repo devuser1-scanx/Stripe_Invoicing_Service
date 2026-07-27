@@ -19,6 +19,13 @@ from app.services.invoice_service import (
 from app.services.stripe_service import StripeInvoiceService
 from app.services.task_service import CloudTaskService
 
+from app.schemas.reconciliation import (
+    ReconciliationRequest,
+    ReconciliationResponse,
+)
+from app.services.reconciliation_service import (
+    ReconciliationService,
+)
 
 router = APIRouter(
     prefix="/billing",
@@ -73,13 +80,12 @@ def process_invoice(
     """
     Called by Cloud Tasks.
 
-    The existing Milestone 2 logic rechecks eligibility and performs the
-    actual Stripe invoice operation.
+    Rechecks eligibility and performs the actual Stripe invoice operation.
     """
 
     service = InvoiceProcessingService(
         db=db,
-        stripe_service=StripeInvoiceService(db),
+        stripe_service=StripeInvoiceService(),
     )
 
     result = service.process(
@@ -90,11 +96,8 @@ def process_invoice(
     )
 
     if result.status == "retryable_failure":
-        # A non-2xx response tells Cloud Tasks to retry.
         raise HTTPException(
-            status_code=(
-                status.HTTP_503_SERVICE_UNAVAILABLE
-            ),
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=result.reason,
         )
 
@@ -109,3 +112,16 @@ def process_invoice(
         ),
         stripe_invoice_id=result.stripe_invoice_id,
     )
+
+# Reconciliation API
+@router.post(
+    "/reconcile",
+    response_model=ReconciliationResponse,
+)
+def reconcile_invoices(
+    request: ReconciliationRequest,
+    db: Session = Depends(get_db),
+) -> ReconciliationResponse:
+    service = ReconciliationService(db)
+
+    return service.reconcile(request)
