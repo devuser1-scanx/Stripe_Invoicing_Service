@@ -35,7 +35,7 @@ class EligibilityService:
         organization = context.organization
         now = datetime.now(timezone.utc)
 
-        if appointment.status_label != "Complete":
+        if appointment.status_label != "Completed":
             return EligibilityResult(
                 False,
                 "appointment_not_complete",
