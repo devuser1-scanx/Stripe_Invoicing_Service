@@ -23,3 +23,4 @@ class ReferralOrganization(Base):
     status: Mapped[str] = mapped_column(String(30), nullable=False)
     stripe_customer_id: Mapped[str | None] = mapped_column(String(100))
     payment_terms_days: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    updated_at: Mapped[datetime | None] = mapped_column()

@@ -1,0 +1,11 @@
+* Run the Following command in gcloud SDK:
+
+gcloud run services proxy scanx-billing-service ^
+  --region=us-central1 ^
+  --project=vernal-maker-473121-k4 ^
+  --port=8085
+
+API Endpoints:
+
+1) curl http://127.0.0.1:8085/health --> For app status
+2) curl http://127.0.0.1:8085/health/ready  --> For db connection status

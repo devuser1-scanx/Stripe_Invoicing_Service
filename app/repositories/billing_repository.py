@@ -181,3 +181,30 @@ class BillingRepository:
         invoice.payment_status = "failed"
         invoice.updated_at = datetime.now(timezone.utc)
         self.db.commit()
+
+
+    def update_organization_stripe_customer(
+            self,
+            *,
+            organization_id: uuid.UUID,
+            stripe_customer_id: str,
+        ) -> None:
+            organization = self.db.get(
+                ReferralOrganization,
+                organization_id,
+            )
+
+            if organization is None:
+                raise RuntimeError(
+                    "Referral organization not found"
+                )
+
+            organization.stripe_customer_id = (
+                stripe_customer_id
+            )
+
+            organization.updated_at = (
+                datetime.now(timezone.utc)
+            )
+
+            self.db.commit()
